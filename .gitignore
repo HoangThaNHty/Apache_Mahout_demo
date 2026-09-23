@@ -1,0 +1,10 @@
+target/
+.tools/
+.kilo/
+data/ml-100k/
+data/*.zip
+data/ratings-mahout.csv
+demo.log
+*.log
+.vscode/
+.idea/

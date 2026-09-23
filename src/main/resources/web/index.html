@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apache Mahout · Trình diễn thuật toán gợi ý</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="mark">M</div>
+        <div><span>HUIT · BIG DATA</span><h1>Apache Mahout hoạt động như thế nào?</h1></div>
+      </div>
+      <div class="runtime"><i></i><b>MAHOUT 0.13.0</b><span id="engine-state">Đang xác minh Java · Taste API</span></div>
+    </header>
+
+    <nav id="progress" aria-label="Tiến trình thuật toán"></nav>
+    <section class="user-toolbar" aria-label="Chọn người cần gợi ý">
+      <label for="user-select">Người cần gợi ý</label>
+      <select id="user-select" disabled></select>
+      <span id="user-summary" role="status">Đang tải dataset…</span>
+      <button id="run-user" class="primary" disabled>Chạy gợi ý</button>
+    </section>
+
+    <main>
+      <section class="stage-card">
+        <div class="stage-top">
+          <div><span id="step-kicker">BƯỚC 1 / 7</span><h2 id="step-title">Đọc dữ liệu đánh giá</h2></div>
+          <div class="status-pill"><span id="status-dot"></span><b id="status-text">SẴN SÀNG</b></div>
+        </div>
+        <div id="visual" class="visual" aria-live="polite"></div>
+      </section>
+
+      <aside class="explain-card">
+        <div class="explain-head"><span>GIẢI THÍCH</span><b id="step-time">00:00</b></div>
+        <h3 id="explain-title">Dữ liệu đầu vào</h3>
+        <p id="explain-text"></p>
+        <div id="mahout-class" class="class-box"></div>
+        <div id="formula" class="formula"></div>
+        <div class="takeaway"><span>ĐIỂM CẦN NHỚ</span><p id="takeaway"></p></div>
+      </aside>
+    </main>
+
+    <section class="controls">
+      <button id="prev" class="icon" title="Bước trước (←)">←</button>
+      <button id="play" class="primary"><span>▶</span> Bắt đầu trình diễn</button>
+      <button id="next" class="icon" title="Bước sau (→)">→</button>
+      <button id="replay" class="quiet" title="Chạy lại (R)">↻ Chạy lại</button>
+      <button id="overview" class="quiet" title="Mở lại phần tổng quan (O)">◎ Tổng quan</button>
+      <select id="speed" aria-label="Tốc độ"><option value="12000">12 giây / bước</option><option value="20000">20 giây / bước</option><option value="6000">6 giây / bước</option></select>
+      <div class="timeline"><div id="timeline-bar"></div></div>
+      <button id="fullscreen" class="quiet" title="Toàn màn hình (F)">⛶ Toàn màn hình</button>
+    </section>
+
+    <footer>
+      <span>Demo minh họa <b>Mahout Classic / Taste API trên một máy</b></span>
+      <span>Không phải phép đo hiệu năng phân tán MapReduce hoặc Spark</span>
+      <span>← → chuyển bước · Space tạm dừng</span>
+    </footer>
+  </div>
+  <section id="intro" class="intro" aria-labelledby="intro-title" aria-modal="true" role="dialog">
+    <div class="intro-card">
+      <div class="intro-eyebrow">DEMO TRỰC QUAN · APACHE MAHOUT CLASSIC</div>
+      <h2 id="intro-title">Dataset thành danh sách phim gợi ý như thế nào?</h2>
+      <p class="intro-lead">Demo chạy thuật toán thật bằng Java và Mahout. Giao diện chỉ trình bày lại từng bước để người xem có thể theo dõi.</p>
+      <div class="intro-flow" aria-label="Luồng demo">
+        <article><span>ĐẦU VÀO</span><strong id="dataset-size">Đang đọc CSV…</strong><small id="dataset-count">Dataset minh họa có ID và tên</small></article>
+        <div class="intro-arrow">→</div>
+        <article class="intro-engine"><span>XỬ LÝ</span><strong>Mahout Classic</strong><small>Pearson · Neighborhood · Recommender</small></article>
+        <div class="intro-arrow">→</div>
+        <article><span>ĐẦU RA</span><strong id="target-name">Top‑2 cho An</strong><small>Dự đoán từ các rating đã nạp</small></article>
+      </div>
+      <div class="intro-proof"><b id="intro-engine">Đang kết nối Mahout…</b><span>Phạm vi: Taste API trên một máy, không phải benchmark MapReduce hoặc Spark.</span></div>
+      <div class="dataset-actions"><a href="/api/dataset" download="dataset-150.csv">↓ Tải dataset mẫu (150 rating)</a><label class="upload">↑ Đọc dataset CSV<input id="dataset-file" type="file" accept=".csv,text/csv"></label><button id="default-data">Dùng dataset mẫu</button></div>
+      <p class="dataset-help">CSV UTF-8: userId,userName,movieId,movieName,rating. Chọn bất kỳ người nào trong dataset. Điểm từ 1–5, không ghi dòng cho ô chưa đánh giá.</p>
+      <label for="intro-user-select">Chạy gợi ý cho </label><select id="intro-user-select" disabled></select>
+      <p id="dataset-status" role="status"></p>
+      <button id="intro-start" class="intro-start"><span>▶</span> Chạy tự động từng bước</button>
+      <button id="manual-start" class="quiet">Xem và điều khiển từng bước</button>
+      <p class="intro-keys">Space: tạm dừng · ← →: chuyển bước · F: toàn màn hình · O: mở tổng quan</p>
+    </div>
+  </section>
+  <div id="toast" role="status"></div>
+  <script>
+    window.addEventListener('error', function () {
+      document.getElementById('dataset-status').textContent = 'Giao diện gặp lỗi. Hãy tải lại trang (Ctrl+Shift+R); nếu vẫn lỗi, gửi thông báo này để kiểm tra.';
+    });
+  </script>
+  <script src="/app.js?v=user-selector-4"></script>
+</body>
+</html>
